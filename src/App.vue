@@ -17,8 +17,16 @@ export default {
     overflow: hidden;
     margin: 0;
   }
-  input{
+  /**透明输入框*/
+  .trans-input > input{
     background-color: rgba(255, 255, 255, 0) !important;
+    color: white !important;
+  }
+  .el-dialog{
+    background-color: rgba(46, 64, 84, 0.3) !important;
+  }
+  .el-dialog__body{
+    padding-top: 0;
   }
   #app {
     height: 100%;

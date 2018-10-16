@@ -1,9 +1,9 @@
 <template>
   <div class="login">
-    <div class="login-main">
+    <div class="login-main" v-if="isRegister">
       <el-row>
         <el-col :span="24">
-          <el-input
+          <el-input v-model="userModel.user_name" class="trans-input"
             placeholder="请输入账号"
             prefix-icon="fa fa-fw fa-user-o">
           </el-input>
@@ -11,20 +11,20 @@
       </el-row>
       <el-row>
         <el-col :span="24">
-          <el-input
-          placeholder="请输入密码"
-          prefix-icon="fa fa-fw fa-key">
-        </el-input>
+          <el-input v-model="userModel.password" class="trans-input"
+            placeholder="请输入密码" type="password"
+            prefix-icon="fa fa-fw fa-key">
+          </el-input>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="24">
-          <button class="login-button">登录</button>
+          <button class="login-button" @click="login">登录</button>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="24">
-          <button class="login-button">注册</button>
+          <button class="login-button" @click="register">注册</button>
         </el-col>
       </el-row>
       <el-row>
@@ -34,12 +34,160 @@
         </el-col>
       </el-row>
     </div>
+    <el-dialog title="-" :visible.sync="dialogVisible" :close-on-click-modal="false"
+               :close-on-press-escape="false" width="30%" @close="dialogClose">
+      <el-form :model="registerModel" :rules="registerRules" ref="registerForm">
+        <el-form-item prop="user_name">
+          <el-col :span="24">
+            <el-input v-model="registerModel.user_name" class="trans-input"
+                      placeholder="请输入账号"
+                      prefix-icon="fa fa-fw fa-user-o">
+            </el-input>
+          </el-col>
+        </el-form-item>
+        <el-form-item prop="password">
+          <el-col :span="24">
+            <el-input v-model="registerModel.password" class="trans-input"
+                      placeholder="请输入密码" type="password"
+                      prefix-icon="fa fa-fw fa-key">
+            </el-input>
+          </el-col>
+        </el-form-item>
+        <el-form-item prop="password2">
+          <el-col :span="24">
+            <el-input v-model="registerModel.password2" class="trans-input"
+                      placeholder="请确认密码" type="password"
+                      prefix-icon="fa fa-fw fa-key">
+            </el-input>
+          </el-col>
+        </el-form-item>
+        <el-form-item prop="district">
+          <el-col :span="24">
+            <el-input v-model="registerModel.district" class="trans-input"
+                      placeholder="请输入地址"
+                      prefix-icon="fa fa-fw fa-globe">
+            </el-input>
+          </el-col>
+        </el-form-item>
+        <el-row style="margin-bottom: 0">
+          <el-col :span="24">
+            <span style="color: white">正在定位您的位置：</span>
+            <i class="fa fa-fw fa-spinner fa-spin" style="color: orange"></i>
+          </el-col>
+        </el-row>
+        <el-row style="margin-bottom: 0">
+          <el-col :span="24">
+            <el-button type="success" size="medium" class="pull-right" @click="saveUser">注册</el-button>
+          </el-col>
+        </el-row>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
-  name: 'login'
+  name: 'login',
+  data () {
+    return {
+      dialogVisible: false,
+      isRegister: true,
+      userModel: {
+        user_name: null,
+        password: null
+      },
+      registerModel: {
+        user_name: null,
+        password: null,
+        password2: null,
+        district: null
+      },
+      registerRules: {
+        user_name: [
+          { required: true, message: '账号为空', trigger: 'change' }
+        ],
+        password: [
+          { required: true, message: '密码为空', trigger: 'change' }
+        ],
+        password2: [
+          { required: true, message: '确认密码为空', trigger: 'change' }
+        ],
+        district: [
+          { required: true, message: '地区为空', trigger: 'change' }
+        ]
+      }
+    }
+  },
+  methods: {
+    login () {
+      const vm = this
+      if (!vm.userModel.user_name) {
+        vm.$message(`账号为空`)
+        return
+      }
+      if (!vm.userModel.password) {
+        vm.$message(`密码为空`)
+        return
+      }
+      axios.post('/gcbin/login_validate', vm.userModel).then((response) => {
+        console.log(response)
+        if (response.data.success) {
+          vm.$router.push({path: 'resource'})
+        } else {
+          vm.$message(response.data.message)
+        }
+      })
+    },
+    /**
+     * 打开注册的dialog
+     * */
+    register () {
+      console.log()
+      const vm = this
+      vm.isRegister = false
+      vm.dialogVisible = true
+    },
+    /**
+     * dialog关闭回调
+     * */
+    dialogClose () {
+      const vm = this
+      vm.isRegister = true
+      vm.$refs['registerForm'].resetFields()
+    },
+    /**
+     * 保存注册用户
+     * */
+    saveUser () {
+      const vm = this
+      vm.$refs['registerForm'].validate((valid) => {
+        if (!valid) {
+          return
+        }
+        if (vm.registerModel.password === vm.registerModel.password2) {
+          axios.post('/gcbin/register', vm.registerModel).then((response) => {
+            if (response.data.success) {
+              vm.$confirm(`是否直接登录？`, `注册成功`, {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'success'
+              }).then(() => {
+                vm.$set(vm.userModel, 'user_name', vm.registerModel.user_name)
+                vm.$set(vm.userModel, 'password', vm.registerModel.password)
+                vm.login()
+              })
+            } else {
+              vm.$message(response.data.message)
+            }
+          })
+        } else {
+          vm.$message(`密码不一致`)
+        }
+      })
+    }
+  }
 }
 </script>
 
@@ -78,5 +226,4 @@ export default {
 .el-row{
   margin-bottom: 20px;
 }
-
 </style>
