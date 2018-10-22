@@ -2,6 +2,7 @@
 <el-row>
   <el-col :span="24">
     <el-menu
+      :router="true"
       background-color="#1A2226"
       :unique-opened="true"
       text-color="#fff"
@@ -13,7 +14,7 @@
         </template>
         <sub-menu :item="subItem" v-for="subItem in item.children" :key="subItem.pk_resource"></sub-menu>
       </el-submenu>
-      <el-menu-item :index="item.funcode" v-else>
+      <el-menu-item :index="item.funcode" v-else route="../system/LeftMenu">
         <template slot="title">
           <i :class="item.resicon" class="fa-fw"></i>
           <span>{{item.funname}}</span>
