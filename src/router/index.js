@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import elementTest from '@/components/elementTest'
-import login from '@/components/login'
-import resource from '@/components/admin/resource'
+import Login from '@/components/Login'
+import Resource from '@/components/admin/Resource'
+import LeftMenu from '@/components/system/LeftMenu'
 
 Vue.use(Router)
 
@@ -10,23 +10,18 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'login',
-      component: login
+      name: 'Login',
+      component: Login
     },
     {
-      path: '/elementTest',
-      name: 'elementTest',
-      component: elementTest
+      path: '/admin/Resource',
+      name: 'Resource',
+      component: Resource
     },
     {
-      path: '/login',
-      name: 'login',
-      component: login
-    },
-    {
-      path: '/resource',
-      name: 'resource',
-      component: resource
+      path: '/system/LeftMenu',
+      name: 'LeftMenu',
+      component: LeftMenu
     }
   ]
 })

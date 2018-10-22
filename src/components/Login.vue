@@ -1,4 +1,4 @@
-<template>
+<template ref="login">
   <div class="login">
     <div class="login-main" v-if="isRegister">
       <el-row>
@@ -89,7 +89,7 @@
 import axios from 'axios'
 
 export default {
-  name: 'login',
+  name: 'Login',
   data () {
     return {
       dialogVisible: false,
@@ -120,6 +120,11 @@ export default {
       }
     }
   },
+  computed: {
+    count () {
+      return this.$store.state.count
+    }
+  },
   methods: {
     login () {
       const vm = this
@@ -132,9 +137,10 @@ export default {
         return
       }
       axios.post('/gcbin/login_validate', vm.userModel).then((response) => {
-        console.log(response)
         if (response.data.success) {
-          vm.$router.push({path: 'resource'})
+          vm.$store.commit('getUserInfo', response.data.data) // 只能存在运存当中，暂时不考虑
+          window.sessionStorage.setItem('userInfo', JSON.stringify(response.data.data))
+          vm.$router.push({path: 'admin/Resource'})
         } else {
           vm.$message(response.data.message)
         }

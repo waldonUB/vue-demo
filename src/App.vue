@@ -14,7 +14,7 @@ export default {
   html, body {
     height: 100%;
     max-height: 100%;
-    overflow: hidden;
+    overflow: auto;
     margin: 0;
   }
   /**透明输入框*/
