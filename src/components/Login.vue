@@ -34,7 +34,7 @@
         </el-col>
       </el-row>
     </div>
-    <el-dialog title="-" :visible.sync="dialogVisible" :close-on-click-modal="false"
+    <el-dialog class="trans-dialog" title="-" :visible.sync="dialogVisible" :close-on-click-modal="false"
                :close-on-press-escape="false" width="30%" @close="dialogClose">
       <el-form :model="registerModel" :rules="registerRules" ref="registerForm">
         <el-form-item prop="user_name">
@@ -140,7 +140,7 @@ export default {
         if (response.data.success) {
           vm.$store.commit('getUserInfo', response.data.data) // 只能存在运存当中，暂时不考虑
           window.sessionStorage.setItem('userInfo', JSON.stringify(response.data.data))
-          vm.$router.push({path: 'admin/Resource'})
+          vm.$router.push({path: 'manager'})
         } else {
           vm.$message(response.data.message)
         }

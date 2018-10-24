@@ -1,9 +1,9 @@
 <template>
-  <div id="container" style="width: 100%; height: 100%"></div>
+  <div id="BMapContainer" style="width: 100%; height: 500px"></div>
 </template>
 
 <script>
-import {MP} from '../../../config/map'
+import {MP} from '../../../../config/map'
 
 export default {
   name: 'BMap',
@@ -212,13 +212,11 @@ export default {
   methods: {
     initMap (BMap) {
       const vm = this
-      let script = document.createElement('script')
-      script.type = 'text/javascript'
-      script.src = 'http://api.map.baidu.com/api?v=2.0&ak=DP0tSGq2RqOjTQ5zBTj54vVRYmaiuzRT'
-      document.body.appendChild(script)
-      let map = new BMap.Map('container')
+      let map = new BMap.Map('BMapContainer', { mapType: window['BMAP_HYBRID_MAP'] })
       map.enableScrollWheelZoom(true)
       map.addControl(new BMap.MapTypeControl())
+      let point = new BMap.Point(116.404, 39.915)
+      map.centerAndZoom(point, 5)
       map.setMapStyle({
         styleJson: [{
           'featureType': 'water',

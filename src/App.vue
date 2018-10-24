@@ -22,7 +22,7 @@ export default {
     background-color: rgba(255, 255, 255, 0) !important;
     color: white !important;
   }
-  .el-dialog{
+  .trans-dialog > .el-dialog{
     background-color: rgba(46, 64, 84, 0.3) !important;
   }
   .el-dialog__body{

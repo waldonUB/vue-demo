@@ -16,10 +16,10 @@ module.exports = {
       //   pathRewrite: {'^/api' : '/'}, // 重写路径
       //   changeOrigin: true // 是否跨域
       // }
-      '/api': {
+      '/gcbin': {
         target: 'http://localhost:8080', // 代理服务器路径
         pathRewrite: {
-          '^/api': '/' // 重写路径
+          '^/gcbin': '/' // 重写路径
         },
         changeOrigin: true // 是否跨域
       }

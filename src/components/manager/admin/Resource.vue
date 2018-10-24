@@ -4,7 +4,7 @@
     <el-container>
       <el-aside width="220px" style="overflow: auto"><left-menu></left-menu></el-aside>
       <el-container>
-        <el-main><router-view/></el-main>
+        <el-main>main</el-main>
         <el-footer>Footer</el-footer>
       </el-container>
     </el-container>
@@ -12,8 +12,8 @@
 </template>
 
 <script>
-import leftMenu from '../system/LeftMenu'
-import top from '../system/Top'
+import leftMenu from '../../system/LeftMenu'
+import top from '../../system/Top'
 
 export default {
   name: 'Resource',

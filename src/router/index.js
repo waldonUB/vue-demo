@@ -1,9 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Login from '@/components/Login'
-import Resource from '@/components/admin/Resource'
-import LeftMenu from '@/components/system/LeftMenu'
-import BMap from '@/components/user/BMap'
+import Manager from '@/components/Manager'
+import manager from '@/router/manager'
 
 Vue.use(Router)
 
@@ -15,19 +14,9 @@ export default new Router({
       component: Login
     },
     {
-      path: '/admin/Resource',
-      name: 'Resource',
-      component: Resource
-    },
-    {
-      path: '/system/LeftMenu',
-      name: 'LeftMenu',
-      component: LeftMenu
-    },
-    {
-      path: '/user/BMap',
-      name: 'BMap',
-      component: BMap
+      path: '/manager/',
+      component: Manager,
+      children: manager
     }
   ]
 })
