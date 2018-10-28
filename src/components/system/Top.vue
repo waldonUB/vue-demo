@@ -17,9 +17,7 @@
         <el-col :span="12">
           <el-row>
             <el-col :span="12">
-              <el-button circle>
-                <img v-bind:src="headImg" style="height: 33px;width: 33px">
-              </el-button>
+              <img v-bind:src="headImg" style="height: 57px;width: 57px;border-radius: 50%">
             </el-col>
             <el-col :span="12">
               {{userName}}
@@ -107,10 +105,27 @@ export default {
     modifyHead (file) {
       debugger
       const vm = this
-      let fileReader = new FileReader()
-      fileReader.readAsDataURL(file.file)
-      fileReader.onload = function (event) {
-        const base64 = event.target.result
+      const windowURL = window.URL || window.webkitURL
+      const dataURL = windowURL.createObjectURL(file.file)
+      const promise = new Promise((resolve, reject) => {
+        const img = new Image()
+        img.src = dataURL
+        img.onload = function () {
+          const that = this
+          const w = 100
+          const h = 100
+          // const scale = w / h
+          const canvas = document.createElement('canvas')
+          const ctx = canvas.getContext('2d')
+          ctx.fillStyle = 'rgba(255,255,255,0)'
+          canvas.width = w
+          canvas.height = h
+          ctx.drawImage(that, 0, 0, w, h)
+          const base64 = canvas.toDataURL('image/png')
+          resolve(base64)
+        }
+      })
+      promise.then((base64) => {
         axios.post('/gcbin/head_portrait', {base64: base64, user_name: vm.userName}).then((response) => {
           if (response.data.success) {
             window.sessionStorage.setItem('headImg', response.data.data)
@@ -129,7 +144,7 @@ export default {
           }
           vm.$refs['upload'].clearFiles()
         })
-      }
+      })
     },
     selectType (file, fileList) {
       const vm = this

@@ -28,6 +28,9 @@ export default {
   .el-dialog__body{
     padding-top: 0;
   }
+  .el-card__header {
+    padding: 5px 5px 5px 15px !important;
+  }
   #app {
     height: 100%;
     font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;

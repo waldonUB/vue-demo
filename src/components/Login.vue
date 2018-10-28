@@ -140,6 +140,7 @@ export default {
         if (response.data.success) {
           vm.$store.commit('getUserInfo', response.data.data) // 只能存在运存当中，暂时不考虑
           window.sessionStorage.setItem('userInfo', JSON.stringify(response.data.data))
+          window.sessionStorage.setItem('headImg', response.data.data.head_img)
           vm.$router.push({path: 'manager'})
         } else {
           vm.$message(response.data.message)
