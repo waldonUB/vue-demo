@@ -31,6 +31,10 @@ export default {
   .el-card__header {
     padding: 5px 5px 5px 15px !important;
   }
+  .preview > p {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
   #app {
     height: 100%;
     font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
