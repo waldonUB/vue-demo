@@ -1,7 +1,7 @@
 <template>
   <el-container>
     <el-header style="margin-top: 30px">
-      <el-input placeholder="请输入内容" v-model="essayTitle">
+      <el-input placeholder="请输入内容" v-model="essayTitle" maxlength="60">
         <template slot="prepend">杂谈标题</template>
       </el-input>
     </el-header>
@@ -18,11 +18,19 @@
       </el-select>
     </el-main>
     <el-footer>
-      <el-button type="primary" size="small" @click="saveEssay">预览</el-button>
-      <el-button type="success" size="small" @click="saveEssay">发布杂谈</el-button>
+      <el-button type="primary" size="small" @click="previewEssay" :disabled="allowSave">预览</el-button>
+      <el-button type="success" size="small" @click="saveEssay" :disabled="allowSave">发布杂谈</el-button>
     </el-footer>
     <el-dialog :visible.sync="dialogTableVisible" @open="openDialog" ref="dialog" width="80%">
       <div slot="title">
+        <el-row>
+          <el-col style="text-align: center;font-size: 22px; font-weight: bolder">
+            {{essayTitle}}
+          </el-col>
+          <el-col>
+            <el-tag size="small" type="warning" class="pull-right">{{essayClassify}}</el-tag>
+          </el-col>
+        </el-row>
         <div id="preview" class="preview"></div>
       </div>
     </el-dialog>
@@ -31,8 +39,15 @@
 
 <script>
 import E from 'wangeditor'
+import axios from 'axios'
 export default {
   name: 'Essay',
+  computed: {
+    allowSave () {
+      const vm = this
+      return !(vm.essayTitle && vm.essayClassify && vm.editorHtml)
+    }
+  },
   data () {
     return {
       userInfo: null,
@@ -61,18 +76,40 @@ export default {
     }
   },
   methods: {
-    saveEssay () {
-      console.log(this.editorHtml)
-      console.log(this.editorHtml.length)
-      console.log(this.editorText)
-      console.log(this.editorJSON)
-      this.dialogTableVisible = true
-    },
     openDialog () {
       const preview = document.getElementById('preview')
       preview.innerHTML = this.editorHtml
       const dialog = this.$refs.dialog
       console.log(dialog)
+    },
+    previewEssay () {
+      this.dialogTableVisible = true
+    },
+    saveEssay () {
+      const vm = this
+      const data = {
+        blog_title: vm.essayTitle,
+        blog_content: vm.editorHtml,
+        blog_classify: vm.essayClassify,
+        cuserid: vm.userInfo.cuserid,
+        user_name: vm.userInfo.user_name,
+        head_img: vm.userInfo.head_img
+      }
+      axios.post('/gcbin/save_question', data).then((response) => {
+        if (response.data.success) {
+          vm.$notify({
+            title: '操作提示',
+            message: `发布成功`,
+            type: 'success'
+          })
+        } else {
+          vm.$notify({
+            title: '操作提示',
+            message: `发布失败` + response.data.message,
+            type: 'error'
+          })
+        }
+      })
     }
   },
   mounted () {

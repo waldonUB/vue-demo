@@ -1,13 +1,16 @@
 <template>
-  <el-container>
-    <el-header>Header</el-header>
-    <el-main>Main</el-main>
-  </el-container>
+  <div id="contentDetail"></div>
 </template>
 
 <script>
 export default {
-  name: 'EssayInfo'
+  name: 'EssayInfo',
+  mounted () {
+    const vm = this
+    const essay = vm.$route.query.essay
+    const contentDetail = document.getElementById('contentDetail')
+    contentDetail.innerHTML = essay.blog_content
+  }
 }
 </script>
 

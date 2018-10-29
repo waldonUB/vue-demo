@@ -12,7 +12,7 @@
                 <el-tag size="small" type="info">{{essay.user_name}}</el-tag>
               </el-col>
               <el-col :span="12" style="margin-top: 9px;font-size: 20px;font-weight: bolder">
-                {{essay.blog_title}}
+                <span @click="getDetail(essay.blog_content)" style="cursor: pointer">{{essay.blog_title}}</span>
                 <i @click="praise(essay.pk_blog, index)" v-if="essay.is_praised === 1" class="fa fa-fw fa-star" style="color: darkred;cursor: pointer; font-size: 16px"></i>
                 <i @click="praise(essay.pk_blog, index)" v-else class="fa fa-fw fa-star-o" style="color: darkgray;cursor: pointer; font-size: 16px"></i>
               </el-col>
@@ -27,9 +27,7 @@
               </el-col>
             </el-row>
           </div>
-          <div>
-            {{essay.blog_content}}
-          </div>
+          <div :id="essay.pk_blog" class="essayContent"></div>
           <el-collapse v-model="activeNames" @change="getComments(essay.pk_blog)" style="margin-top: 20px;">
             <el-collapse-item :name="essay.pk_blog">
               <template slot="title">
@@ -108,8 +106,17 @@ export default {
      * */
     getEssays () {
       const vm = this
-      axois.post('/gcbin/query_blog', {user_name: vm.userInfo.user_name}).then((response) => {
-        vm.essays = response.data.data
+      const promise = new Promise((resolve, reject) => {
+        axois.post('/gcbin/query_blog', {user_name: vm.userInfo.user_name}).then((response) => {
+          vm.essays = response.data.data
+          resolve(vm.essays)
+        })
+      })
+      promise.then((essays) => {
+        essays.map((item) => {
+          const pkBlog = document.getElementById(item.pk_blog)
+          pkBlog.innerHTML = item.blog_content
+        })
       })
     },
     /**
@@ -141,6 +148,9 @@ export default {
         vm.commentInfo.push(commentInfo)
         vm.$set(vm.essays[index], 'comment_num', vm.essays[index].comment_num + 1)
       })
+    },
+    getDetail (essay) {
+      this.$router.push({path: 'EssayInfo', query: { essay: essay }})
     }
   },
   mounted () {
@@ -154,6 +164,10 @@ export default {
 <style scoped>
 .el-row {
   width: 100%;
+}
+.essayContent {
+  max-height: 400px;
+  overflow: hidden;
 }
 
 </style>
