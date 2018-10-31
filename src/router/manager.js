@@ -25,7 +25,8 @@ export default [
     component: Essay
   },
   {
-    path: 'user/EssayInfo',
+    path: 'user/EssayInfo/:essay',
+    name: 'EssayInfo',
     component: EssayInfo
   }
 ]

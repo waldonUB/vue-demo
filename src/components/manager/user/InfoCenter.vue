@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <el-container class="essays">
     <el-row>
       <el-col v-for="(essay, index) in essays" :key="essay.pk_blog" :span="24">
         <el-card shadow="hover" :body-style="cardStyle">
@@ -12,7 +12,7 @@
                 <el-tag size="small" type="info">{{essay.user_name}}</el-tag>
               </el-col>
               <el-col :span="12" style="margin-top: 9px;font-size: 20px;font-weight: bolder">
-                <span @click="getDetail(essay.blog_content)" style="cursor: pointer">{{essay.blog_title}}</span>
+                <span @click="getDetail(essay)" style="cursor: pointer">{{essay.blog_title}}</span>
                 <i @click="praise(essay.pk_blog, index)" v-if="essay.is_praised === 1" class="fa fa-fw fa-star" style="color: darkred;cursor: pointer; font-size: 16px"></i>
                 <i @click="praise(essay.pk_blog, index)" v-else class="fa fa-fw fa-star-o" style="color: darkgray;cursor: pointer; font-size: 16px"></i>
               </el-col>
@@ -106,6 +106,12 @@ export default {
      * */
     getEssays () {
       const vm = this
+      const loading = this.$loading({
+        lock: true,
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 1)',
+        target: document.querySelector('.essays')
+      })
       const promise = new Promise((resolve, reject) => {
         axois.post('/gcbin/query_blog', {user_name: vm.userInfo.user_name}).then((response) => {
           vm.essays = response.data.data
@@ -117,6 +123,7 @@ export default {
           const pkBlog = document.getElementById(item.pk_blog)
           pkBlog.innerHTML = item.blog_content
         })
+        loading.close()
       })
     },
     /**
@@ -150,7 +157,7 @@ export default {
       })
     },
     getDetail (essay) {
-      this.$router.push({path: 'EssayInfo', query: { essay: essay }})
+      this.$router.push({name: 'EssayInfo', params: { essay: JSON.stringify(essay) }})
     }
   },
   mounted () {

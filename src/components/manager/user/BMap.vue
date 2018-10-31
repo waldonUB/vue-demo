@@ -4,11 +4,13 @@
 
 <script>
 import {MP} from '../../../../config/map'
+import axios from 'axios'
 
 export default {
   name: 'BMap',
   data () {
     return {
+      userInfo: null,
       ak: 'DP0tSGq2RqOjTQ5zBTj54vVRYmaiuzRT',
       allPoints: {
         '海门': [121.15, 31.89],
@@ -215,171 +217,36 @@ export default {
       let map = new BMap.Map('BMapContainer', { mapType: window['BMAP_HYBRID_MAP'] })
       map.enableScrollWheelZoom(true)
       map.addControl(new BMap.MapTypeControl())
-      let point = new BMap.Point(116.404, 39.915)
-      map.centerAndZoom(point, 5)
-      // map.setMapStyle({
-      //   styleJson: [{
-      //     'featureType': 'water',
-      //     'elementType': 'all',
-      //     'stylers': {
-      //       'color': '#044161'
-      //     }
-      //   }, {
-      //     'featureType': 'land',
-      //     'elementType': 'all',
-      //     'stylers': {
-      //       'color': '#091934'
-      //     }
-      //   }, {
-      //     'featureType': 'boundary',
-      //     'elementType': 'geometry',
-      //     'stylers': {
-      //       'color': '#064f85'
-      //     }
-      //   }, {
-      //     'featureType': 'railway',
-      //     'elementType': 'all',
-      //     'stylers': {
-      //       'visibility': 'off'
-      //     }
-      //   }, {
-      //     'featureType': 'highway',
-      //     'elementType': 'geometry',
-      //     'stylers': {
-      //       'color': '#004981'
-      //     }
-      //   }, {
-      //     'featureType': 'highway',
-      //     'elementType': 'geometry.fill',
-      //     'stylers': {
-      //       'color': '#005b96',
-      //       'lightness': 1
-      //     }
-      //   }, {
-      //     'featureType': 'highway',
-      //     'elementType': 'labels',
-      //     'stylers': {
-      //       'visibility': 'on'
-      //     }
-      //   }, {
-      //     'featureType': 'arterial',
-      //     'elementType': 'geometry',
-      //     'stylers': {
-      //       'color': '#004981',
-      //       'lightness': -39
-      //     }
-      //   }, {
-      //     'featureType': 'arterial',
-      //     'elementType': 'geometry.fill',
-      //     'stylers': {
-      //       'color': '#00508b'
-      //     }
-      //   }, {
-      //     'featureType': 'poi',
-      //     'elementType': 'all',
-      //     'stylers': {
-      //       'visibility': 'off'
-      //     }
-      //   }, {
-      //     'featureType': 'green',
-      //     'elementType': 'all',
-      //     'stylers': {
-      //       'color': '#056197',
-      //       'visibility': 'off'
-      //     }
-      //   }, {
-      //     'featureType': 'subway',
-      //     'elementType': 'all',
-      //     'stylers': {
-      //       'visibility': 'off'
-      //     }
-      //   }, {
-      //     'featureType': 'manmade',
-      //     'elementType': 'all',
-      //     'stylers': {
-      //       'visibility': 'off'
-      //     }
-      //   }, {
-      //     'featureType': 'local',
-      //     'elementType': 'all',
-      //     'stylers': {
-      //       'visibility': 'off'
-      //     }
-      //   }, {
-      //     'featureType': 'arterial',
-      //     'elementType': 'labels',
-      //     'stylers': {
-      //       'visibility': 'off'
-      //     }
-      //   }, {
-      //     'featureType': 'boundary',
-      //     'elementType': 'geometry.fill',
-      //     'stylers': {
-      //       'color': '#029fd4'
-      //     }
-      //   }, {
-      //     'featureType': 'building',
-      //     'elementType': 'all',
-      //     'stylers': {
-      //       'color': '#1a5787'
-      //     }
-      //   }, {
-      //     'featureType': 'label',
-      //     'elementType': 'all',
-      //     'stylers': {
-      //       'visibility': 'off'
-      //     }
-      //   }, {
-      //     'featureType': 'poi',
-      //     'elementType': 'labels.text.fill',
-      //     'stylers': {
-      //       'color': '#ffffff'
-      //     }
-      //   }, {
-      //     'featureType': 'poi',
-      //     'elementType': 'labels.text.stroke',
-      //     'stylers': {
-      //       'color': '#1e1c1c'
-      //     }
-      //   }, {
-      //     'featureType': 'administrative',
-      //     'elementType': 'labels',
-      //     'stylers': {
-      //       'visibility': 'off'
-      //     }
-      //   }, {
-      //     'featureType': 'road',
-      //     'elementType': 'labels',
-      //     'stylers': {
-      //       'visibility': 'off'
-      //     }
-      //   }]
-      // })
-      for (let k in vm.allPoints) {
-        let x = vm.allPoints[k][0]
-        let y = vm.allPoints[k][1]
-        vm.areas.push(k)
-        vm.xPoints.push(x)
-        vm.yPoints.push(y)
-        vm.pointNum++
-      }
-      setInterval(function () {
-        let point = new BMap.Point(vm.xPoints[vm.pointIndex], vm.yPoints[vm.pointIndex])
-        map.centerAndZoom(point, 6)
-        let marker = new BMap.Marker(point)
-        map.clearOverlays() // 清除覆盖物
-        map.addOverlay(marker)
-        let label = new BMap.Label(vm.areas[vm.pointIndex], {offset: new BMap.Size(20, -10)})
-        marker.setLabel(label)
-        marker.setAnimation(window['BMAP_ANIMATION_BOUNCE'])
-        vm.pointIndex++
-        if (vm.pointIndex === vm.pointNum) {
-          vm.pointIndex = 0
+      map.clearOverlays() // 清除覆盖物
+      vm.getLoginUsers().then((loginUserInfo) => {
+        for (let k in vm.allPoints) {
+          loginUserInfo.forEach((item) => {
+            if (k === item.district) {
+              let x = vm.allPoints[k][0]
+              let y = vm.allPoints[k][1]
+              let point = new BMap.Point(x, y)
+              map.centerAndZoom(point, 6)
+              let marker = new BMap.Marker(point)
+              map.addOverlay(marker)
+              let label = new BMap.Label(k)
+              marker.setLabel(label)
+              marker.setAnimation(window['BMAP_ANIMATION_BOUNCE'])
+            }
+          })
         }
-      }, 5000)
+      })
+    },
+    getLoginUsers () {
+      return new Promise((resolve, reject) => {
+        axios.post('/gcbin/query_last').then((response) => {
+          resolve(response.data.data)
+        })
+      })
     }
   },
   mounted () {
+    const vm = this
+    vm.userInfo = JSON.parse(window.sessionStorage.getItem('userInfo'))
     this.$nextTick(function () {
       var _this = this
       MP(_this.ak).then((BMap) => {

@@ -1,15 +1,22 @@
 <template>
-  <div id="contentDetail"></div>
+  <div>
+    <div id="contentDetail"></div>
+  </div>
 </template>
 
 <script>
 export default {
   name: 'EssayInfo',
+  data () {
+    return {
+      essay: null
+    }
+  },
   mounted () {
     const vm = this
-    const essay = vm.$route.query.essay
+    vm.essay = JSON.parse(vm.$route.params.essay)
     const contentDetail = document.getElementById('contentDetail')
-    contentDetail.innerHTML = essay.blog_content
+    contentDetail.innerHTML = vm.essay.blog_content
   }
 }
 </script>
